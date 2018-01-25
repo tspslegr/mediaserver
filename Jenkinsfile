@@ -1,11 +1,11 @@
 
 def runUnitTests() {
-    sh "mvn clean install"
+    sh "mvn clean install -s $MAVEN_SETTINGS"
 }
 
 
 def buildMedia() {
-        sh "mvn clean install -DskipTests=true"
+        sh "mvn clean install -DskipTests=true -s $MAVEN_SETTINGS"
 }
 
 def publishRCResults() {
@@ -30,6 +30,10 @@ def publishRCResults() {
 node("cxs-slave-master") {
 
    echo sh(returnStdout: true, script: 'env')
+
+    configFileProvider(
+        [configFile(fileId: 'settings-cxs-upstream.xml', variable: 'MAVEN_SETTINGS')]) {
+    }
 
    stage ('Checkout') {
     checkout scm
