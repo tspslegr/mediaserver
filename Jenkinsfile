@@ -1,12 +1,21 @@
 
 def runUnitTests() {
-    sh "mvn clean install"
+    sh "mvn clean install -Dmaven.test.failure.ignore=true"
 }
 
 
 def buildMedia() {
-        sh "mvn clean install -DskipTests=true"
+        sh "mvn clean install -DskipTests=true "
 }
+
+def deployMediaCXS() {
+	if (env.PUBLISH_TO_CXS_NEXUS == 'true') {
+		sh "mvn clean install package deploy:deploy -Pattach-sources,generate-javadoc,maven-release -DskipTests=true -DskipNexusStagingDeployMojo=true -DaltDeploymentRepository=nexus::default::$CXS_NEXUS2_URL"
+	} else {
+	    sh 'echo skipping CXS deployment'
+	}
+}
+
 
 def publishRCResults() {
     junit testResults: '**/target/surefire-reports/*.xml', testDataPublishers: [[$class: 'StabilityTestDataPublisher']]
@@ -44,9 +53,14 @@ node("cxs-slave-master") {
     buildMedia()
    }
 
-   stage ("Build") {
+   stage ("Tests") {
     runUnitTests()
    }
+
+   stage ("Deploy") {
+    deployMediaCXS()
+   }
+
 //   stage("PublishResults") {
 //    publishRCResults()
 //   }
