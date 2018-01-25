@@ -32,7 +32,7 @@ node("cxs-slave-master") {
    echo sh(returnStdout: true, script: 'env')
 
     configFileProvider(
-        [configFile(fileId: 'settings-cxs-upstream.xml', variable: 'MAVEN_SETTINGS')]) {
+        [configFile(fileId: '37cb206e-6498-4d8a-9b3d-379cd0ccd99b', variable: 'MAVEN_SETTINGS')]) {
     }
 
    stage ('Checkout') {
