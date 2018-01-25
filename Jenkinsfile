@@ -3,6 +3,10 @@ def runUnitTests() {
     sh "mvn clean install -Dmaven.test.failure.ignore=true"
 }
 
+def setVersions() {
+	sh "mvn versions:set -DnewVersion=$MAJOR_VERSION_NUMBER-$BUILD_NUMBER -DprocessDependencies=false -DprocessParent=true -Dmaven.test.skip=true"
+}
+
 
 def buildMedia() {
         sh "mvn clean install -DskipTests=true "
@@ -47,6 +51,10 @@ node("cxs-slave-master") {
 
    stage ('Checkout') {
     checkout scm
+   }
+
+   stage ("ReleaseVersions") {
+    setVersions()
    }
 
    stage ("Build") {
